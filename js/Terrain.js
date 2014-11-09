@@ -8,15 +8,14 @@ function(
 
     var meshSideLength = 80;
 
-    function makePlane(){
-        var geometry = new THREE.PlaneGeometry(2000, 2000, meshSideLength, meshSideLength);
+    function makePlane(colours){
+        var geometry = new THREE.PlaneGeometry(3000, 3000, meshSideLength, meshSideLength);
         var material  = new THREE.MeshPhongMaterial({
-            color: 0xcc0000,
-            ambient: 0x000000,
-            specular: 0xff0000
+            color: colours.fill,
+            ambient: 0x000000
         });
         var wireframeMaterial  = new THREE.MeshPhongMaterial({
-            color: 0xff3333,
+            color: colours.wireframe,
             wireframe: true
         });
         var mesh = new THREE.SceneUtils.createMultiMaterialObject(geometry, [
@@ -79,8 +78,11 @@ function(
         mesh.geometry.verticesNeedUpdate = true;
     }
 
-    function Terrain(){
-        this.plane = makePlane();
+    function Terrain(options){
+        if(!options.colours){
+            throw new Error('colours {fill,wireframe} is required');
+        }
+        this.plane = makePlane(options.colours);
 
         this.animate();
     }

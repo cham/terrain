@@ -19,7 +19,7 @@ define([
     function scene(){
         var s = new THREE.Scene();
         
-        s.fog = new THREE.FogExp2(0xff0000, 0.0001);
+        // s.fog = new THREE.FogExp2(0xff0000, 0.0001);
 
         return s;
     }
@@ -45,7 +45,7 @@ define([
     }
 
     function sceneLighting(){
-        var spotlight = new THREE.SpotLight(0xaaaaff, 1);
+        var spotlight = new THREE.SpotLight(0xffaaaa, 1);
 
         spotlight.position.set(700, 700, 700);
         spotlight.target.position.set(0, 0, 0);
@@ -56,20 +56,36 @@ define([
     }
 
     function rotateCamera(cam, ticks){
-        cam.position.x = Math.sin(ticks*0.001) * cameraDistance;
-        cam.position.z = Math.cos(ticks*0.001) * cameraDistance;
-        cam.target = new THREE.Vector3(0, 0, 0);
+        var targetPosition = new THREE.Vector3(
+            Math.sin(ticks*0.01) * cameraDistance/2,
+            0,
+            Math.cos(ticks*0.01) * cameraDistance/2
+        );
+
+        cam.position.x = Math.PI - Math.sin(ticks*0.005) * cameraDistance;
+        cam.position.y = (Math.sin(ticks*0.005) * cameraDistance/3) + cameraDistance*(2/3);
+        cam.position.z = Math.PI - Math.cos(ticks*0.005) * cameraDistance;
+
+        cam.target = targetPosition;
         cam.lookAt(cam.target);
     }
 
     function TerrainScene(){
+        var colours = [
+            {fill: 0xcc0000, wireframe: 0xff3333},
+            {fill: 0xcccc00, wireframe: 0xffff33}
+        ];
+        var terrain;
+
         this.scene = scene();
         this.renderer = renderer();
         this.camera = camera();
         this.scene.add(sceneLighting());
 
-        this.terrain = new Terrain();
-        this.scene.add(this.terrain.getObject());
+        for(var i in colours){
+            terrain = new Terrain({colours: colours[i]});
+            this.scene.add(terrain.getObject());
+        }
 
         this.resize();
         this.animate();
