@@ -8,6 +8,10 @@ function(
 
     var meshSideLength = 80;
 
+    function zeroFilledArray(length){
+        return Array.apply(null, new Array(length)).map(Number.prototype.valueOf, 0);
+    }
+
     function makePlane(colours){
         var geometry = new THREE.PlaneGeometry(3000, 3000, meshSideLength, meshSideLength);
         var material  = new THREE.MeshPhongMaterial({
@@ -30,11 +34,7 @@ function(
         return mesh;
     }
 
-    function accellerationMap(mesh){
-        return Array.apply(null, new Array(mesh.geometry.vertices.length)).map(Number.prototype.valueOf,0);
-    }
-
-    function increaseVertexRow(vertices, index){
+    function getVertexAndNeighbours(vertices, index){
         var vArr = [];
 
         if(vertices[index-1]){
@@ -53,9 +53,9 @@ function(
     function increaseVertexGroup(meshVertices, centerIndex, increase){
         var filteredVertices = [];
 
-        filteredVertices = filteredVertices.concat(increaseVertexRow(meshVertices, centerIndex));
-        filteredVertices = filteredVertices.concat(increaseVertexRow(meshVertices, centerIndex + meshSideLength));
-        filteredVertices = filteredVertices.concat(increaseVertexRow(meshVertices, centerIndex - meshSideLength));
+        filteredVertices = filteredVertices.concat(getVertexAndNeighbours(meshVertices, centerIndex));
+        filteredVertices = filteredVertices.concat(getVertexAndNeighbours(meshVertices, centerIndex + meshSideLength));
+        filteredVertices = filteredVertices.concat(getVertexAndNeighbours(meshVertices, centerIndex - meshSideLength));
 
         filteredVertices.forEach(function(vertex){
             vertex.z += increase;
@@ -93,7 +93,7 @@ function(
 
     Terrain.prototype.animate = function(){
         var mesh = this.plane.children[0];
-        var vertexAccel = accellerationMap(mesh);
+        var vertexAccel = zeroFilledArray(mesh.geometry.vertices.length);
 
         function tick(){
             requestAnimationFrame(tick);

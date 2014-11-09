@@ -16,14 +16,6 @@ define([
         };
     }
 
-    function scene(){
-        var s = new THREE.Scene();
-        
-        // s.fog = new THREE.FogExp2(0xff0000, 0.0001);
-
-        return s;
-    }
-
     function renderer(){
         var glRenderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
         
@@ -63,7 +55,7 @@ define([
         );
 
         cam.position.x = Math.PI - Math.sin(ticks*0.005) * cameraDistance;
-        cam.position.y = (Math.sin(ticks*0.005) * cameraDistance/3) + cameraDistance*(2/3);
+        cam.position.y = (Math.sin(ticks*0.005) * cameraDistance/3) + cameraDistance*2/3;
         cam.position.z = Math.PI - Math.cos(ticks*0.005) * cameraDistance;
 
         cam.target = targetPosition;
@@ -77,7 +69,7 @@ define([
         ];
         var terrain;
 
-        this.scene = scene();
+        this.scene = new THREE.Scene();
         this.renderer = renderer();
         this.camera = camera();
         this.scene.add(sceneLighting());
@@ -106,13 +98,11 @@ define([
 
     TerrainScene.prototype.animate = function(){
         var cam = this.camera;
-        var s = this.scene;
         var numTicks = 0;
 
         function tick(){
             requestAnimationFrame(tick);
-            numTicks++;
-            rotateCamera(cam, numTicks);
+            rotateCamera(cam, numTicks++);
         }
         tick();
     };
